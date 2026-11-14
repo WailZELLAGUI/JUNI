@@ -69,7 +69,7 @@ export const specials: Record<string, { title: string; text: string; order?: str
   '10-06': {
     title: 'Happy birthday, Juju',
     text: 'Happy birthday, my love. The world got so much better the day you arrived. Today everything is on the house, and all of my heart too.',
-    order: 'The birthday girl\'s favourite, please. She deserves the best cup of the year.',
+    order: 'The best cup of the year, please, made by the birthday girl herself.',
   },
   '12-23': {
     title: 'A birthday wish',
@@ -84,6 +84,6 @@ export const specials: Record<string, { title: string; text: string; order?: str
   '01-01': {
     title: 'Happy New Year',
     text: 'Happy New Year, my love. A whole new year of mornings with you. I cannot wait for every one of them.',
-    order: 'The first drink of the year, for the first person in my heart.',
+    order: 'The first drink of the year, made by the first person in my heart.',
   },
 };

@@ -67,7 +67,7 @@ export const drinks: Drink[] = [
   {
     id: 'iced-ube', name: 'Iced ube latte', mixed: 'ube-milk', foam: 'milk',
     steps: [scoop('Add the ube', 'ube'), ice(), pour('Pour the cold milk', 0.58), stir('Stir until it turns lilac'), top('berries', 'cocoa')],
-    orders: ['An iced ube latte, please. The prettiest drink for the prettiest girl.', 'One iced ube, and one long look at you.'],
+    orders: ['An iced ube latte, please. The prettiest drink, from the prettiest girl.', 'One iced ube, and one long look at you.'],
   },
   {
     id: 'matcha-mango', name: 'Matcha mango', mixed: 'mango-matcha', foam: 'milk',
