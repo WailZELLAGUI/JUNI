@@ -1,18 +1,22 @@
 import { useState } from 'react';
-import type { TimeOfDay } from '../game/daily';
+import type { Mood, TimeOfDay } from '../game/daily';
 import { play } from '../game/sound';
 
 const WINDOW = 'M40 360V195a85 85 0 0 1 170 0V360Z';
 
 // The shop interior. Wall and counter bleed far past the 390 x 720 frame so
 // taller and wider screens simply show more of the room.
-export type NiniState = 'in' | 'out' | 'gone';
+export type NiniState = 'in' | 'here' | 'out' | 'gone';
 
-export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniState; decor: string[] }) {
+type Props = { time: TimeOfDay; nini: NiniState; decor: string[]; mood: Mood; sparkle?: boolean; cup?: string; onPet?: () => void };
+
+export function ShopArt({ time, nini, decor, mood, sparkle, cup, onPet }: Props) {
   const [pets, setPets] = useState(0);
+  const asleep = time === 'night' && pets === 0;
   const pet = () => {
     setPets((n) => n + 1);
     play('woof');
+    onPet?.();
   };
   const sunY = { morning: 205, day: 165, evening: 300, night: 190 }[time];
   return (
@@ -32,6 +36,20 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
         ) : (
           <circle className="f-sun" cx="150" cy={sunY} r="34" />
         )}
+        {mood.rain && (
+          <g className="rain s s-white" strokeWidth="2" opacity=".75">
+            {Array.from({ length: 42 }, (_, i) => {
+              const x = 46 + (i % 6) * 30 + (Math.floor(i / 6) % 2) * 15;
+              const y = -100 + Math.floor(i / 6) * 80;
+              return <path key={i} d={`M${x} ${y}l-5 16`} />;
+            })}
+          </g>
+        )}
+        {mood.snow && (
+          <g className="snow f-white">
+            {Array.from({ length: 35 }, (_, i) => <circle key={i} cx={50 + (i % 7) * 24} cy={-90 + Math.floor(i / 7) * 110 + (((i % 7) * 37) % 90)} r={2 + ((i % 7) % 3)} />)}
+          </g>
+        )}
         <ellipse className="f-matcha" cx="90" cy="372" rx="110" ry="50" />
         <ellipse className="f-matcha-deep" cx="215" cy="382" rx="90" ry="42" />
       </g>
@@ -46,7 +64,10 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       <ellipse className="f-dog" cx="213" cy="334" rx="9" ry="6" />
       <circle className="f-ink" cx="221" cy="332" r="2.400" />
       <ellipse className="f-ink" cx="197" cy="334" rx="5" ry="10" transform="rotate(12 197 334)" />
-      <circle className="f-ink" cx="205" cy="327" r="1.700" />
+      {asleep ? <path className="s s-ink" strokeWidth="1.600" d="M202 328q3 2 6 0" /> : <circle className="f-ink" cx="205" cy="327" r="1.700" />}
+      {asleep && <text className="label zzz" x="214" y="312">z z</text>}
+      {mood.festive && <><path className="f-pink-deep" d="M194 322l9-20 8 19Z" /><circle className="f-sun" cx="203" cy="301" r="3.500" /></>}
+      {sparkle && <path className="f-sun sparkle" d="M176 300l3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" />}
       {pets > 0 && (
         <g className="woof" key={pets}>
           <rect className="f-white" x="150" y="286" width="62" height="24" rx="12" />
@@ -122,6 +143,25 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       <rect className="f-wood" x="-300" y="474" width="990" height="8" opacity=".55" />
       <rect className="f-cream" x="-300" y="452" width="990" height="24" />
 
+      {mood.festive === 'christmas' && (
+        <g>
+          <circle className="s s-matcha-deep" strokeWidth="9" cx="125" cy="158" r="17" />
+          <g className="f-pink-deep"><circle cx="113" cy="150" r="2.500" /><circle cx="137" cy="164" r="2.500" /><circle cx="122" cy="174" r="2.500" /></g>
+          <path className="f-pink-deep" d="M125 139l-10-7v12ZM125 139l10-7v12Z" />
+        </g>
+      )}
+      {mood.festive === 'birthday' && (
+        <g>
+          <path className="s s-ink" strokeWidth="1.200" opacity=".5" d="M22 172q4 50 8 96M44 150q-6 60-12 118M14 138q10 70 16 130" />
+          <ellipse className="f-pink" cx="22" cy="152" rx="15" ry="19" /><ellipse className="f-sun" cx="46" cy="130" rx="15" ry="19" /><ellipse className="f-matcha" cx="14" cy="118" rx="15" ry="19" />
+        </g>
+      )}
+      {mood.festive === 'newyear' && (
+        <g>
+          {Array.from({ length: 22 }, (_, i) => <rect key={i} className={['f-pink-deep', 'f-sun', 'f-matcha-deep', 'f-white'][i % 4]} x={14 + ((i * 53) % 360)} y={84 + ((i * 29) % 70)} width="8" height="3.500" rx="1.700" transform={`rotate(${i * 40} ${18 + ((i * 53) % 360)} ${86 + ((i * 29) % 70)})`} />)}
+        </g>
+      )}
+
       <rect className="f-pink-deep" x="34" y="342" width="92" height="22" rx="9" />
       <rect className="f-pink" x="26" y="356" width="108" height="100" rx="14" />
       <rect className="f-cream" x="40" y="370" width="80" height="22" rx="8" /><circle className="f-pink-deep" cx="56" cy="381" r="5" /><circle className="f-matcha" cx="74" cy="381" r="5" />
@@ -133,6 +173,14 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       <path className="s s-white steam two" strokeWidth="4" d="M242 408q8-12 0-24t0-24" />
       <path className="f-white" d="M186 428h84a42 32 0 0 1-84 0Z" /><rect className="f-cream-deep" x="214" y="455" width="28" height="5" rx="2" />
       <ellipse className="f-matcha" cx="228" cy="428" rx="42" ry="9" /><ellipse className="f-matcha-pale" cx="221" cy="427" rx="18" ry="3.500" />
+      {cup && (
+        <g className="held">
+          <path className="f-white" d="M248 396h30l-3 38h-24Z" />
+          <path style={{ fill: `var(--${cup})` }} d="M250.500 404h25l-2.300 28h-20.400Z" />
+          <circle className="f-skin" cx="279" cy="418" r="7" />
+          <path className="f-pink-deep hearts" transform="translate(296 386) scale(.5)" d="M0 14c-17-12-13-24-5-24 4 0 5 4 5 4s1-4 5-4c8 0 12 12-5 24Z" />
+        </g>
+      )}
       <rect className="f-wood" x="284" y="404" width="14" height="28" rx="5" /><path className="f-cream-deep" d="M282 430h18l5 26h-28Z" />
 
       {decor.includes('flowers') && (

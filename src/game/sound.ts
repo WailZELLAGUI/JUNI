@@ -1,27 +1,35 @@
 // Small synthesised sounds. Nothing to download, and silent unless Juju turns sound on.
 
 const KEY = 'juni.sound';
+// 0 is silent, 1 is sound effects, 2 is sound effects and music.
+export type Level = 0 | 1 | 2;
+let level: Level = 0;
 let enabled = false;
 let ctx: AudioContext | null = null;
 let pour: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+let music: number | undefined;
 
 try {
-  enabled = localStorage.getItem(KEY) === '1';
+  const saved = Number(localStorage.getItem(KEY));
+  level = saved === 1 || saved === 2 ? saved : 0;
+  enabled = level > 0;
 } catch {
   // Storage blocked: sound simply stays off.
 }
 
-export const soundOn = () => enabled;
+export const soundLevel = () => level;
 
-export function setSound(on: boolean) {
-  enabled = on;
+export function setSound(next: Level) {
+  level = next;
+  enabled = next > 0;
   try {
-    localStorage.setItem(KEY, on ? '1' : '0');
+    localStorage.setItem(KEY, String(next));
   } catch {
     // The choice just will not be remembered.
   }
-  if (on) play('pop');
+  if (enabled) play('pop');
   else stopPour();
+  syncMusic();
 }
 
 function audio(): AudioContext | null {
@@ -136,3 +144,48 @@ export function stopPour() {
   }
   pour = null;
 }
+
+// A slow, quiet loop of four soft chords with a few high notes, like a cafe playlist heard from the next room.
+const CHORDS = [
+  [174.61, 220, 261.63, 329.63],
+  [164.81, 196, 246.94, 293.66],
+  [146.83, 174.61, 220, 261.63],
+  [130.81, 164.81, 196, 246.94],
+];
+let bar = 0;
+
+function playBar() {
+  const c = audio();
+  if (!c || c.state !== 'running') return;
+  const chord = CHORDS[bar % CHORDS.length];
+  const t = c.currentTime + 0.05;
+  chord.forEach((f) => {
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.022, t + 1.2);
+    gain.gain.linearRampToValueAtTime(0.0001, t + 4.4);
+    osc.connect(gain).connect(c.destination);
+    osc.start(t);
+    osc.stop(t + 4.5);
+  });
+  [0.4, 1.6, 2.6].forEach((at, i) => tone(c, chord[(bar + i * 2) % 4] * 2, chord[(bar + i * 2) % 4] * 2, at, 1.1, 0.018, 'triangle'));
+  bar++;
+}
+
+export function syncMusic() {
+  const want = level === 2 && document.visibilityState === 'visible';
+  if (want && music === undefined) {
+    playBar();
+    music = window.setInterval(playBar, 4000);
+  }
+  if (!want && music !== undefined) {
+    clearInterval(music);
+    music = undefined;
+  }
+}
+document.addEventListener('visibilitychange', syncMusic);
+// Music can only start after a first touch, so try again on the first one.
+window.addEventListener('pointerdown', syncMusic, { once: true });

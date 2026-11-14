@@ -1,7 +1,7 @@
 // Everything JUNI remembers lives in this one object, saved on the device.
 
-export type DayRecord = { title?: string; note: string; drink: string; art: string; sticker: string };
-export type Save = { v: 1; days: Record<string, DayRecord>; stickers: Record<string, number> };
+export type DayRecord = { title?: string; note: string; drink: string; drinkId?: string; art: string; strokes?: string[]; sticker: string; reply?: string };
+export type Save = { v: 1; days: Record<string, DayRecord>; stickers: Record<string, number>; bonus?: Record<string, string> };
 
 const KEY = 'juni.save.v1';
 const empty = (): Save => ({ v: 1, days: {}, stickers: {} });

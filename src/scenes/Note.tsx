@@ -13,10 +13,10 @@ export function Stamps({ filled, fresh }: { filled: number; fresh?: boolean }) {
   );
 }
 
-type Props = { title?: string; text: string; reward?: string; stamps?: number; onClose: () => void };
+type Props = { title?: string; text: string; reward?: string; stamps?: number; reply?: string; onReply: () => void; onClose: () => void };
 
 // Nini's note, and on the first reading of the day, the sticker and stamp that come with it.
-export function Note({ title, text, reward, stamps, onClose }: Props) {
+export function Note({ title, text, reward, stamps, reply, onReply, onClose }: Props) {
   return (
     <div className="scene note">
       <div className="note-card">
@@ -35,6 +35,8 @@ export function Note({ title, text, reward, stamps, onClose }: Props) {
           <Stamps filled={stamps} fresh />
         </div>
       )}
+      {reply && <p className="replied">You replied: {reply}</p>}
+      <button type="button" className="btn soft note-reply" onClick={onReply}>{reply ? 'Change my reply' : 'Reply to Nini'}</button>
       <button type="button" className="btn note-close" onClick={onClose}>
         {reward ? (stamps === CARD ? 'Your card is full, open the surprise' : 'Keep them') : 'Back to the shop'}
       </button>

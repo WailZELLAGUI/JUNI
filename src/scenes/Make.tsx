@@ -101,7 +101,7 @@ function Pourer({ from, color }: { from: 'pitcher' | 'bowl' | 'blender'; color: 
   );
 }
 
-export function Make({ drink, onServe }: { drink: Drink; onServe: (art: string) => void }) {
+export function Make({ drink, onServe }: { drink: Drink; onServe: (art: string, strokes: string[]) => void }) {
   const [index, setIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [holding, setHolding] = useState(false);
@@ -489,7 +489,7 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: string) 
                 </svg>
               </button>
             </div>
-            <button type="button" className="btn" disabled={!picks.length && !strokes.length} onClick={() => onServe([...picks, ...(strokes.length ? ['drawn'] : [])].join('+'))}>
+            <button type="button" className="btn" disabled={!picks.length && !strokes.length} onClick={() => onServe([...(step.multi ? STACK.filter((id) => picks.includes(id)) : picks), ...(strokes.length ? ['drawn'] : [])].join('+'), strokes)}>
               Serve it to Nini
             </button>
           </>

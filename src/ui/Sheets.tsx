@@ -1,4 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { MiniCup } from '../art/MiniCup';
+import { drinks } from '../content/drinks';
+import { quickReplies } from '../content/reactions';
 import { Sticker, stickerIds, stickers } from '../art/stickers';
 import { longDate } from '../game/daily';
 import type { Save } from '../game/storage';
@@ -56,6 +59,7 @@ export function LetterBox({ save, onClose }: { save: Save; onClose: () => void }
             <li key={key}>
               <span className="small">{longDate(key)}, {day.drink.toLowerCase()}</span>
               <p className="note-text">{day.note}</p>
+              {day.reply && <p className="replied">You replied: {day.reply}</p>}
             </li>
           ))}
         </ul>
@@ -105,6 +109,72 @@ export function StampCard({ save, onClose }: { save: Save; onClose: () => void }
           ))}
         </ul>
       )}
+    </Sheet>
+  );
+}
+
+const drinkOf = (day: { drink: string; drinkId?: string }) => drinks.find((d) => d.id === day.drinkId) ?? drinks.find((d) => d.name === day.drink);
+
+export function Album({ save, onClose }: { save: Save; onClose: () => void }) {
+  const days = Object.entries(save.days).sort(([a], [b]) => (a < b ? 1 : -1));
+  return (
+    <Sheet title="Drink album" sub={days.length === 1 ? '1 drink made for Nini' : `${days.length} drinks made for Nini`} onClose={onClose}>
+      {days.length === 0 ? (
+        <p className="empty">Every drink you make is kept here, with the art you gave it. Serve today's order to start the album.</p>
+      ) : (
+        <ul className="album">
+          {days.map(([key, day]) => (
+            <li key={key}>
+              <MiniCup drink={drinkOf(day)} art={day.art} strokes={day.strokes} />
+              <strong>{day.drink}</strong>
+              <span className="small">{new Date(key + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Sheet>
+  );
+}
+
+// Juju writes back. The reply is kept with the day's note, and the phone's own share
+// sheet sends it to Nini through whichever app she likes.
+export function Reply({ current, onSave, onClose }: { current?: string; onSave: (text: string) => void; onClose: () => void }) {
+  const [text, setText] = useState(current ?? '');
+  const [state, setState] = useState<'idle' | 'kept' | 'copied'>('idle');
+  const clean = text.trim();
+
+  const send = async () => {
+    if (!clean) return;
+    onSave(clean);
+    try {
+      if (navigator.share) {
+        await navigator.share({ text: clean });
+        setState('kept');
+      } else {
+        await navigator.clipboard.writeText(clean);
+        setState('copied');
+      }
+    } catch {
+      // She closed the share sheet, or sharing is not available here. The reply is still kept.
+      setState('kept');
+    }
+  };
+
+  return (
+    <Sheet title="Reply to Nini" sub="Pick one, or write your own" onClose={onClose}>
+      <div className="chips">
+        {quickReplies.map((q) => (
+          <button key={q} type="button" className={'btn soft' + (clean === q ? ' on' : '')} aria-pressed={clean === q} onClick={() => { setText(q); setState('idle'); }}>{q}</button>
+        ))}
+      </div>
+      <label className="small" htmlFor="reply-text">Your reply</label>
+      <textarea id="reply-text" rows={3} maxLength={280} value={text} onChange={(e) => { setText(e.target.value); setState('idle'); }} placeholder="Write something for Nini" />
+      <button type="button" className="btn" disabled={!clean} onClick={send}>Share it with Nini</button>
+      <p className="small" role="status">
+        {state === 'kept' && 'Your reply is kept with today\'s note.'}
+        {state === 'copied' && 'Copied. Paste it into a message to Nini. It is also kept with today\'s note.'}
+        {state === 'idle' && 'This opens your messages so you can send it to him.'}
+      </p>
     </Sheet>
   );
 }

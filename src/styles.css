@@ -54,6 +54,7 @@
 [data-time="day"] { --sky: #e4f0e6; }
 [data-time="evening"] { --sky: #f8cdbf; --sun: #f4a56f; }
 [data-time="night"] { --sky: #575a7c; }
+[data-rain]:not([data-time="night"]) { --sky: #dfe4e0; --sun: #ece2c4; }
 
 html, body, #root { height: 100%; }
 html, body { overflow: clip; }
@@ -143,6 +144,24 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 .reward { display: grid; grid-template-columns: 24cqw minmax(0, 1fr); gap: 3cqw; align-items: center; font-size: 4.1cqw; }
 .sticker { display: block; width: 100%; height: auto; overflow: visible; }
 
+/* Nini's sip, Tchipo's find */
+.bubble { position: absolute; left: 30%; right: 5%; bottom: 60.500%; margin: 0; padding: 3cqw 4cqw; background: var(--white); border-radius: 5cqw 5cqw 5cqw 1.500cqw; font-family: var(--font-display); font-weight: 600; font-size: 4.600cqw; line-height: 1.2; box-shadow: 0 2cqw 4cqw -2cqw color-mix(in srgb, var(--shadow) 50%, transparent); }
+.slip.sip { justify-items: center; text-align: center; }
+.found { position: absolute; top: 17%; left: 6%; right: 6%; display: grid; grid-template-columns: 16cqw minmax(0, 1fr); gap: 3cqw; align-items: center; padding: 2.500cqw 4cqw 2.500cqw 2.500cqw; background: var(--white); border-radius: 5cqw; font-size: 3.900cqw; box-shadow: 0 2cqw 4cqw -2cqw color-mix(in srgb, var(--shadow) 50%, transparent); }
+.zzz { font-size: 11px; fill: var(--cream); }
+
+/* replies and the album */
+.replied { font-size: 3.900cqw; color: var(--ink-soft); font-style: normal; }
+.note .replied { text-align: center; }
+.note-reply { min-height: 40px; font-size: 3.900cqw; }
+.chips { display: flex; flex-wrap: wrap; gap: 2cqw; }
+.chips .btn.on { background: var(--pink); }
+.sheet textarea { font: inherit; font-size: 16px; color: var(--ink); background: var(--white); border: 2px solid var(--cream-deep); border-radius: 3.500cqw; padding: 3cqw 3.500cqw; resize: none; -webkit-user-select: text; user-select: text; }
+.sheet textarea:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.album { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5cqw 3cqw; }
+.album li { display: grid; gap: .600cqw; justify-items: center; text-align: center; font-size: 3.500cqw; line-height: 1.2; }
+.minicup { display: block; width: 100%; height: auto; }
+
 /* stamps and gifts */
 .stamps { display: flex; gap: 2.4cqw; justify-content: center; }
 .stamp { width: 11cqw; height: 11cqw; border-radius: 50%; box-sizing: border-box; border: 2px dashed var(--wood); display: grid; place-items: center; }
@@ -154,7 +173,8 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 .gift .note-text.long { font-size: 6.4cqw; }
 .unlocked { display: grid; gap: 2.5cqw; }
 .unlocked li { background: var(--white); border-radius: 4cqw; padding: 3.5cqw 4.5cqw; display: grid; gap: .8cqw; font-size: 4.2cqw; }
-.shelf-nav .btn { padding: 0 4.2cqw; font-size: 3.9cqw; }
+.shelf-nav { gap: 2cqw; }
+.shelf-nav .btn { padding: 0 3.600cqw; font-size: 3.700cqw; }
 .sound { position: absolute; top: 2.600%; left: 4%; min-height: 36px; padding: 0 3.400cqw; font-size: 3.200cqw; }
 .test { position: absolute; left: 0; right: 0; top: 16%; display: flex; justify-content: center; }
 .test .btn { font-size: 3.4cqw; min-height: 32px; opacity: .85; }
@@ -222,6 +242,14 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
   .puff.three { animation-delay: -.7s; }
   .sway-soft { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 7s ease-in-out infinite; }
   .home-go { animation: rise .5s .3s var(--ease) both; }
+  .scene { animation: fade .35s linear both; }
+  .bubble, .found { animation: rise .45s .5s var(--ease) both; }
+  .found { animation: found 5s var(--ease) both; }
+  .rain { animation: rain .5s linear infinite; }
+  .snow { animation: snow 6s linear infinite; }
+  .sparkle { transform-box: fill-box; transform-origin: center; animation: twinkle 1.2s ease-in-out infinite; }
+  .hearts { animation: floatup 2.4s ease-out infinite; }
+  .zzz { animation: twinkle 2.6s ease-in-out infinite; }
   .hi { animation: hi .5s 2.1s var(--ease) both; }
   .twinkle circle { animation: twinkle 2.4s ease-in-out infinite; }
   .twinkle circle:nth-child(2n) { animation-delay: -1.2s; }
@@ -250,3 +278,7 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 @keyframes woof { 0% { opacity: 0; transform: translateY(6px); } 15%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; } }
 @keyframes shake { 0% { transform: translate(1.5px, 0); } 50% { transform: translate(-1.5px, 1px); } 100% { transform: translate(1px, -1px); } }
 @keyframes puff { from { opacity: .7; transform: translateY(0); } to { opacity: 0; transform: translateY(-46px); } }
+@keyframes rain { to { transform: translate(-60px, 160px); } }
+@keyframes snow { to { transform: translateY(110px); } }
+@keyframes floatup { from { opacity: 0; } 20% { opacity: 1; } to { opacity: 0; translate: 0 -26px; } }
+@keyframes found { 0% { opacity: 0; transform: translateY(-10px); } 8%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; } }

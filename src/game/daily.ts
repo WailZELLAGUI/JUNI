@@ -59,6 +59,26 @@ function shuffled<T>(items: T[], seed: number): T[] {
   return out;
 }
 
+export type Mood = { rain: boolean; snow: boolean; festive: 'christmas' | 'birthday' | 'newyear' | null; lucky: boolean };
+
+// The weather outside the window, the season, and whether Tchipo has found something today.
+export function moodFor(key: string): Mood {
+  const n = dayNumber(key);
+  const [, m, d] = key.split('-').map(Number);
+  const md = key.slice(5);
+  const festive = md === '10-06' || md === '12-23' ? 'birthday' : m === 12 && d >= 18 && d <= 26 ? 'christmas' : md === '01-01' ? 'newyear' : null;
+  const winter = m === 12 || m === 1 || m === 2;
+  const snow = festive === 'christmas' || (winter && rng(n * 7 + 3)() < 0.3);
+  const rain = !snow && !festive && rng(n * 11 + 1)() < 0.2;
+  return { rain, snow, festive, lucky: rng(n * 13 + 5)() < 0.3 };
+}
+
+// The sticker Tchipo brings on a lucky day: one Juju does not have yet, if any are left.
+export function bonusSticker(key: string, save: Save): string {
+  const order = shuffled(stickerIds, 911);
+  return order.find((id) => !save.stickers[id]) ?? order[dayNumber(key) % order.length];
+}
+
 // The same date always gives the same order. Notes and stickers skip anything
 // Juju already has, so nothing repeats until the whole set has been seen.
 export function planFor(key: string, save: Save): Plan {
