@@ -1,5 +1,5 @@
 // Keeps JUNI working without a connection once it has been opened online.
-const CACHE = 'juni-v1';
+const CACHE = 'juni-v2';
 
 self.addEventListener('install', () => self.skipWaiting());
 
@@ -13,7 +13,7 @@ self.addEventListener('activate', (event) => {
 
 function fetchAndKeep(request) {
   return fetch(request).then((response) => {
-    if (response.ok || response.type === 'opaque') {
+    if (response.ok) {
       const copy = response.clone();
       caches.open(CACHE).then((cache) => cache.put(request, copy));
     }
@@ -25,12 +25,10 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  const fontFile = url.hostname === 'fonts.gstatic.com';
-  const fontSheet = url.hostname === 'fonts.googleapis.com';
-  if (url.origin !== location.origin && !fontFile && !fontSheet) return;
+  if (url.origin !== location.origin) return;
 
-  // Built files and font files never change under the same name: serve the saved copy first.
-  if (fontFile || url.pathname.includes('/assets/')) {
+  // Built files (code, styles, fonts) never change under the same name: serve the saved copy first.
+  if (url.pathname.includes('/assets/')) {
     event.respondWith(caches.match(request, { ignoreVary: true }).then((hit) => hit || fetchAndKeep(request)));
     return;
   }
