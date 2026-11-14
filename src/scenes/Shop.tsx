@@ -1,5 +1,7 @@
 import { ShopArt, type NiniState } from '../art/ShopArt';
+import { useEffect, useState } from 'react';
 import { longDate, type Plan, type TimeOfDay } from '../game/daily';
+import { play, setSound, soundOn } from '../game/sound';
 
 const HELLO: Record<TimeOfDay, string> = {
   morning: 'Good morning, Juju',
@@ -21,10 +23,29 @@ type Props = {
 };
 
 export function Shop({ plan, time, served, nini, decor, onSkip, onStart, onReadNote, onOpen }: Props) {
+  const [sound, setSoundState] = useState(soundOn);
+  // The door bell, as Nini reaches the counter.
+  useEffect(() => {
+    if (served) return;
+    const t = setTimeout(() => play('bell'), 1900);
+    return () => clearTimeout(t);
+  }, [served]);
+
   return (
     <div className="scene shop">
       <ShopArt time={time} nini={nini} decor={decor} />
       <h1 className="mark">JUNI</h1>
+      <button
+        type="button"
+        className="btn soft sound"
+        aria-pressed={sound}
+        onClick={() => {
+          setSound(!sound);
+          setSoundState(!sound);
+        }}
+      >
+        {sound ? 'Sound on' : 'Sound off'}
+      </button>
       <p className="hello">{HELLO[time]}</p>
       <p className="date">{longDate(plan.key)}</p>
 

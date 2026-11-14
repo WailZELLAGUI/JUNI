@@ -144,6 +144,7 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 .unlocked { display: grid; gap: 2.5cqw; }
 .unlocked li { background: var(--white); border-radius: 4cqw; padding: 3.5cqw 4.5cqw; display: grid; gap: .8cqw; font-size: 4.2cqw; }
 .shelf-nav .btn { padding: 0 4.2cqw; font-size: 3.9cqw; }
+.sound { position: absolute; top: 2.600%; left: 4%; min-height: 36px; padding: 0 3.400cqw; font-size: 3.200cqw; }
 .test { position: absolute; left: 0; right: 0; top: 16%; display: flex; justify-content: center; }
 .test .btn { font-size: 3.4cqw; min-height: 32px; opacity: .85; }
 

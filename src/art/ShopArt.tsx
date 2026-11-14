@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { TimeOfDay } from '../game/daily';
+import { play } from '../game/sound';
 
 const WINDOW = 'M40 360V195a85 85 0 0 1 170 0V360Z';
 
@@ -9,6 +10,10 @@ export type NiniState = 'in' | 'out' | 'gone';
 
 export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniState; decor: string[] }) {
   const [pets, setPets] = useState(0);
+  const pet = () => {
+    setPets((n) => n + 1);
+    play('woof');
+  };
   const sunY = { morning: 205, day: 165, evening: 300, night: 190 }[time];
   return (
     <svg className="art" viewBox="0 0 390 720">
@@ -32,7 +37,7 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       </g>
       <path className="s s-cream" strokeWidth="9" d={WINDOW} />
       <path className="s s-cream" strokeWidth="5" d="M125 112V360M40 250H210" />
-      <g className="tchipo" role="button" tabIndex={0} aria-label="Pet Tchipo" onClick={() => setPets((n) => n + 1)} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPets((n) => n + 1)}>
+      <g className="tchipo" role="button" tabIndex={0} aria-label="Pet Tchipo" onClick={pet} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && pet()}>
       <rect x="126" y="312" width="100" height="48" fill="transparent" />
       <path className={pets ? 's s-dog tail fast' : 's s-dog tail'} strokeWidth="5" d="M142 344q-12-2-12-16" />
       <rect className="f-dog" x="138" y="334" width="62" height="22" rx="11" />

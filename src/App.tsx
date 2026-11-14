@@ -4,6 +4,7 @@ import { CARD, rewards } from './content/rewards';
 import { StickerDefs } from './art/stickers';
 import { dateKey, now, planFor, timeOfDay } from './game/daily';
 import { clear, load, store, type Save } from './game/storage';
+import { play } from './game/sound';
 import { Shop } from './scenes/Shop';
 import { Make } from './scenes/Make';
 import { Gift, Note } from './scenes/Note';
@@ -46,6 +47,7 @@ export function App() {
     setReward(plan.sticker);
     setLeaving(true);
     setPhase('note');
+    play('chime');
   };
 
   const gift = reward && count % CARD === 0 ? rewards[count / CARD - 1] : undefined;

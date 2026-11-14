@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react';
 import type { ArtId, Drink } from '../content/drinks';
 import { LatteArt } from '../art/LatteArt';
+import { play, startPour, stopPour } from '../game/sound';
 
 const PRAISE = ['Perfect', 'Just right', 'Lovely', 'So good', 'Beautiful'];
 const fill = (token: string) => ({ fill: `var(--${token})` });
@@ -27,6 +28,7 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: ArtId) =
   useEffect(() => {
     if (!complete || step.kind === 'choose') return;
     setHolding(false);
+    play('ding');
     const t = setTimeout(() => {
       setIndex((i) => i + 1);
       setProgress(0);
@@ -36,6 +38,7 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: ArtId) =
 
   useEffect(() => {
     if (!holding) return;
+    startPour();
     let raf = 0;
     let before = performance.now();
     const tick = (t: number) => {
@@ -45,7 +48,10 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: ArtId) =
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      stopPour();
+    };
   }, [holding]);
 
   // Liquid layers, bottom to top: finished steps in full, the current one so far.
@@ -70,6 +76,7 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: ArtId) =
   const tap = () => {
     if (step.kind !== 'tap' || complete) return;
     setTaps((n) => n + 1);
+    play('plop');
     setProgress((p) => Math.min(1, p + 1 / step.count + 0.001));
   };
 
@@ -240,7 +247,7 @@ export function Make({ drink, onServe }: { drink: Drink; onServe: (art: ArtId) =
           <>
             <div className="arts">
               {step.options.map((id) => (
-                <button key={id} type="button" className={'art-pick' + (art === id ? ' on' : '')} aria-label={`${id} latte art`} aria-pressed={art === id} onClick={() => setArt(id)}>
+                <button key={id} type="button" className={'art-pick' + (art === id ? ' on' : '')} aria-label={`${id} latte art`} aria-pressed={art === id} onClick={() => { setArt(id); play('pop'); }}>
                   <svg viewBox="-60 -60 120 120" aria-hidden="true">
                     <circle style={fill(drink.mixed)} r="54" />
                     <g transform="scale(.72)"><LatteArt id={id} foam={drink.foam} liquid={drink.mixed} /></g>
