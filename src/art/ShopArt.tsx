@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { TimeOfDay } from '../game/daily';
 
 const WINDOW = 'M40 360V195a85 85 0 0 1 170 0V360Z';
@@ -7,9 +8,10 @@ const WINDOW = 'M40 360V195a85 85 0 0 1 170 0V360Z';
 export type NiniState = 'in' | 'out' | 'gone';
 
 export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniState; decor: string[] }) {
+  const [pets, setPets] = useState(0);
   const sunY = { morning: 205, day: 165, evening: 300, night: 190 }[time];
   return (
-    <svg className="art" viewBox="0 0 390 720" aria-hidden="true">
+    <svg className="art" viewBox="0 0 390 720">
       <defs><clipPath id="win"><path d={WINDOW} /></clipPath></defs>
       <rect className="f-wall" x="-300" y="-500" width="990" height="1300" />
       <rect className="f-wall-deep" x="-300" y="400" width="990" height="80" />
@@ -30,7 +32,9 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       </g>
       <path className="s s-cream" strokeWidth="9" d={WINDOW} />
       <path className="s s-cream" strokeWidth="5" d="M125 112V360M40 250H210" />
-      <path className="s s-dog tail" strokeWidth="5" d="M142 344q-12-2-12-16" />
+      <g className="tchipo" role="button" tabIndex={0} aria-label="Pet Tchipo" onClick={() => setPets((n) => n + 1)} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPets((n) => n + 1)}>
+      <rect x="126" y="312" width="100" height="48" fill="transparent" />
+      <path className={pets ? 's s-dog tail fast' : 's s-dog tail'} strokeWidth="5" d="M142 344q-12-2-12-16" />
       <rect className="f-dog" x="138" y="334" width="62" height="22" rx="11" />
       <rect className="f-dog" x="146" y="350" width="7" height="9" rx="3" /><rect className="f-dog" x="186" y="350" width="7" height="9" rx="3" />
       <circle className="f-dog" cx="202" cy="330" r="11" />
@@ -38,6 +42,14 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       <circle className="f-ink" cx="221" cy="332" r="2.400" />
       <ellipse className="f-ink" cx="197" cy="334" rx="5" ry="10" transform="rotate(12 197 334)" />
       <circle className="f-ink" cx="205" cy="327" r="1.700" />
+      {pets > 0 && (
+        <g className="woof" key={pets}>
+          <rect className="f-white" x="150" y="286" width="62" height="24" rx="12" />
+          <text className="label" x="181" y="303" textAnchor="middle">Tchipo</text>
+          <path className="f-pink-deep" transform="translate(222 296) scale(.6)" d="M0 14c-17-12-13-24-5-24 4 0 5 4 5 4s1-4 5-4c8 0 12 12-5 24Z" />
+        </g>
+      )}
+      </g>
       <rect className="f-wood" x="28" y="358" width="194" height="13" rx="6" />
 
       <path className="s s-wood" strokeWidth="2" d="M340 -500V70" />
@@ -82,14 +94,16 @@ export function ShopArt({ time, nini, decor }: { time: TimeOfDay; nini: NiniStat
       <g className={'nini ' + nini}>
         <g className="bob">
           <g transform="translate(30 0)">
-            <g className="f-ink"><circle cx="206" cy="338" r="10" /><circle cx="204" cy="352" r="9" /><circle cx="207" cy="366" r="9" /><circle cx="258" cy="338" r="10" /><circle cx="260" cy="352" r="9" /><circle cx="257" cy="366" r="9" /></g>
-            <path className="f-wood" d="M186 480q0-80 46-88q46 8 46 88Z" />
+            <g className="f-hair"><circle cx="206" cy="338" r="10" /><circle cx="204" cy="352" r="9" /><circle cx="258" cy="338" r="10" /><circle cx="260" cy="352" r="9" /></g>
+            <path className="f-wood" d="M170 480v-50q0-32 36-38h52q36 6 36 38v50Z" />
             <path className="f-cream" d="M218 394l14 34 14-34Z" />
             <rect className="f-cream" x="220" y="370" width="24" height="26" rx="8" />
             <circle className="f-skin" cx="232" cy="346" r="24" />
-            <g className="f-ink"><circle cx="213" cy="328" r="11" /><circle cx="225" cy="319" r="12" /><circle cx="240" cy="319" r="12" /><circle cx="251" cy="328" r="11" /><circle cx="220" cy="331" r="7" /><circle cx="232" cy="328" r="7.500" /><circle cx="244" cy="331" r="7" /></g>
+            <g className="f-hair"><circle cx="213" cy="328" r="11" /><circle cx="225" cy="319" r="12" /><circle cx="240" cy="319" r="12" /><circle cx="251" cy="328" r="11" /><circle cx="220" cy="331" r="7" /><circle cx="232" cy="328" r="7.500" /><circle cx="244" cy="331" r="7" /></g>
             <circle className="f-ink" cx="223" cy="348" r="2.400" /><circle className="f-ink" cx="241" cy="348" r="2.400" />
-            <path className="s s-ink" strokeWidth="2" d="M225 357q7 6 14 0" />
+            <path className="s s-hair" strokeWidth="2.600" d="M218 342q5-3 9 0M237 342q4-3 9 0" />
+            <path className="f-hair" d="M222 357q4-6 10-2q6-4 10 2q-5 3-10 0q-5 3-10 0Z" />
+            <path className="s s-ink" strokeWidth="2" d="M227 361q5 4 10 0" />
             <circle className="f-pink" opacity=".8" cx="216" cy="355" r="4" /><circle className="f-pink" opacity=".8" cx="248" cy="355" r="4" />
             <path className="s s-white" strokeWidth="1.600" d="M209 357q0 26 21 42M255 357q0 26-21 42M232 399v36" />
             <circle className="f-white" cx="209" cy="356" r="3" /><circle className="f-white" cx="255" cy="356" r="3" />

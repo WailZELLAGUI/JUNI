@@ -41,6 +41,7 @@
   /* characters */
   --skin: #e2b188;
   --dog: #b0703f;
+  --hair: #2a211e;
   --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
   --font-body: "Nunito", system-ui, sans-serif;
   --font-note: "Caveat", "Segoe Print", cursive;
@@ -169,12 +170,17 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 .f-matcha{fill:var(--matcha)} .f-matcha-deep{fill:var(--matcha-deep)} .f-matcha-pale{fill:var(--matcha-pale)}
 .f-cream{fill:var(--cream)} .f-cream-deep{fill:var(--cream-deep)} .f-white{fill:var(--white)}
 .f-pink{fill:var(--pink)} .f-pink-deep{fill:var(--pink-deep)} .f-wood{fill:var(--wood)} .f-wood-pale{fill:var(--wood-pale)}
-.f-bake{fill:var(--bake)} .f-ink{fill:var(--ink)} .f-skin{fill:var(--skin)} .f-dog{fill:var(--dog)} .f-pink-pale{fill:var(--pink-pale)}
+.f-bake{fill:var(--bake)} .f-ink{fill:var(--ink)} .f-skin{fill:var(--skin)} .f-dog{fill:var(--dog)} .f-hair{fill:var(--hair)} .f-pink-pale{fill:var(--pink-pale)}
 .ice{opacity:.6;stroke:var(--white);stroke-width:2}
 .s{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .s-cream{stroke:var(--cream)} .s-white{stroke:var(--white)} .s-wood{stroke:var(--wood)} .s-pink{stroke:var(--pink)}
-.s-ink{stroke:var(--ink)} .s-dog{stroke:var(--dog)} .s-matcha-deep{stroke:var(--matcha-deep)} .st-sun{stroke:var(--sun)}
+.s-ink{stroke:var(--ink)} .s-dog{stroke:var(--dog)} .s-hair{stroke:var(--hair)} .s-matcha-deep{stroke:var(--matcha-deep)} .st-sun{stroke:var(--sun)}
 .fl-white{flood-color:var(--white)} .fl-shadow{flood-color:var(--shadow)}
+
+/* Tchipo */
+.tchipo { cursor: pointer; outline: none; }
+.tchipo:focus-visible rect:first-child { stroke: var(--ink); stroke-width: 2; }
+.label { font-family: var(--font-display); font-weight: 700; font-size: 13px; fill: var(--ink); }
 
 /* Nini is hidden once he has left; the walk itself lives in the motion block */
 .nini.gone, .nini.out { visibility: hidden; }
@@ -196,6 +202,8 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
   .nini.out { visibility: visible; animation: walkout 1.7s .5s ease-in both; }
   .nini.in .bob { animation: bob .42s .3s 4 ease-in-out; }
   .nini.out .bob { animation: bob .42s .5s 4 ease-in-out; }
+  .tail.fast { animation-duration: .35s; }
+  .woof { animation: woof 2.2s var(--ease) both; }
   .hi { animation: hi .5s 2.1s var(--ease) both; }
   .twinkle circle { animation: twinkle 2.4s ease-in-out infinite; }
   .twinkle circle:nth-child(2n) { animation-delay: -1.2s; }
@@ -221,3 +229,4 @@ h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; t
 @keyframes hi { from { opacity: 0; } }
 @keyframes twinkle { 50% { opacity: .45; } }
 @keyframes stamp { from { opacity: 0; transform: scale(1.8) rotate(-20deg); } }
+@keyframes woof { 0% { opacity: 0; transform: translateY(6px); } 15%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; } }

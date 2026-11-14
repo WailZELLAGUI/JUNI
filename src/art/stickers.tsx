@@ -49,7 +49,7 @@ export const stickers: Record<string, { name: string; art: ReactNode }> = {
     ),
   },
   dog: {
-    name: 'Sausage dog',
+    name: 'Tchipo',
     art: (
       <g transform="translate(-4 2)">
         <path className="s s-dog" strokeWidth="6" d="M-30 -2q-10-4-9-16" />
