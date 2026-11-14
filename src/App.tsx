@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ArtId } from './content/drinks';
 import { CARD, rewards } from './content/rewards';
 import { StickerDefs } from './art/stickers';
 import { dateKey, now, planFor, timeOfDay } from './game/daily';
 import { clear, load, store, type Save } from './game/storage';
 import { play } from './game/sound';
+import { Home } from './scenes/Home';
 import { Shop } from './scenes/Shop';
 import { Make } from './scenes/Make';
 import { Gift, Note } from './scenes/Note';
 import { LetterBox, StampCard, StickerBook, unlockedRewards } from './ui/Sheets';
 
-type Phase = 'shop' | 'make' | 'note' | 'gift';
+type Phase = 'home' | 'shop' | 'make' | 'note' | 'gift';
 type SheetId = 'letters' | 'stickers' | 'stamps';
 
 // Adding ?reset to the link starts the shop from an empty save.
@@ -21,7 +21,7 @@ const TESTING = !!import.meta.env.VITE_PREVIEW;
 
 export function App() {
   const [save, setSave] = useState<Save>(load);
-  const [phase, setPhase] = useState<Phase>('shop');
+  const [phase, setPhase] = useState<Phase>('home');
   const [sheet, setSheet] = useState<SheetId | null>(null);
   const [reward, setReward] = useState<string | undefined>();
   const [leaving, setLeaving] = useState(false);
@@ -37,7 +37,7 @@ export function App() {
   const plan = useMemo(() => planFor(key, save), [key, record === undefined]); // eslint-disable-line react-hooks/exhaustive-deps
   const decor = unlockedRewards(save).flatMap((r) => (r.kind === 'decor' ? [r.id] : []));
 
-  const serve = (art: ArtId) => {
+  const serve = (art: string) => {
     const next: Save = {
       ...save,
       days: { ...save.days, [key]: { title: plan.title, note: plan.note, drink: plan.drink.name, art, sticker: plan.sticker } },
@@ -57,7 +57,7 @@ export function App() {
   // If JUNI was left open overnight, start the new day as soon as Juju comes back to it.
   useEffect(() => {
     const check = () => {
-      if (document.visibilityState === 'visible' && phase === 'shop' && dateKey(now(skip)) !== key) {
+      if (document.visibilityState === 'visible' && (phase === 'shop' || phase === 'home') && dateKey(now(skip)) !== key) {
         setLeaving(false);
         setReward(undefined);
         setWakes((n) => n + 1);
@@ -75,6 +75,9 @@ export function App() {
     <div className="stage" data-time={time}>
       <StickerDefs />
       <div className="frame">
+        {phase === 'home' && (
+          <Home time={time} dateKey={key} served={!!record} onOpen={() => { play('pop'); setPhase('shop'); }} />
+        )}
         {phase === 'shop' && (
           <Shop
             key={key}

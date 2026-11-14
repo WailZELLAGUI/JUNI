@@ -49,6 +49,40 @@ function tone(c: AudioContext, from: number, to: number, at: number, length: num
   osc.stop(t + length + 0.02);
 }
 
+// A small dog's bark: a buzzy voice that drops in pitch, shaped by a mouth-like filter, plus a breath of noise.
+function bark(c: AudioContext, at: number, pitch: number) {
+  const t = c.currentTime + at;
+  const voice = c.createOscillator();
+  voice.type = 'sawtooth';
+  voice.frequency.setValueAtTime(720 * pitch, t);
+  voice.frequency.exponentialRampToValueAtTime(300 * pitch, t + 0.11);
+  const mouth = c.createBiquadFilter();
+  mouth.type = 'bandpass';
+  mouth.frequency.setValueAtTime(1500, t);
+  mouth.frequency.exponentialRampToValueAtTime(800, t + 0.11);
+  mouth.Q.value = 1.4;
+  const gain = c.createGain();
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.5, t + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+  voice.connect(mouth).connect(gain).connect(c.destination);
+  voice.start(t);
+  voice.stop(t + 0.16);
+
+  const buffer = c.createBuffer(1, Math.floor(c.sampleRate * 0.08), c.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  const breath = c.createBufferSource();
+  breath.buffer = buffer;
+  const air = c.createBiquadFilter();
+  air.type = 'bandpass';
+  air.frequency.value = 1800;
+  const airGain = c.createGain();
+  airGain.gain.value = 0.12;
+  breath.connect(air).connect(airGain).connect(c.destination);
+  breath.start(t);
+}
+
 export type Sound = 'plop' | 'ding' | 'chime' | 'bell' | 'woof' | 'pop';
 
 export function play(name: Sound) {
@@ -67,8 +101,8 @@ export function play(name: Sound) {
     tone(c, 2093, 2093, 0.16, 0.7, 0.05, 'triangle');
   }
   if (name === 'woof') {
-    tone(c, 300, 170, 0, 0.1, 0.12, 'triangle');
-    tone(c, 320, 180, 0.16, 0.1, 0.12, 'triangle');
+    bark(c, 0, 1);
+    bark(c, 0.19, 1.12);
   }
 }
 
