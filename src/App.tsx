@@ -142,7 +142,7 @@ export function App() {
       {sheet === 'stickers' && <StickerBook save={save} onClose={closeSheet} />}
       {sheet === 'stamps' && <StampCard save={save} onClose={closeSheet} />}
       {sheet === 'album' && <Album save={save} onClose={closeSheet} />}
-      {sheet === 'reply' && <Reply current={record?.reply} onSave={reply} onClose={closeSheet} />}
+      {sheet === 'reply' && <Reply note={record?.note ?? plan.note} current={record?.reply} onSave={reply} onClose={closeSheet} />}
     </div>
   );
 }

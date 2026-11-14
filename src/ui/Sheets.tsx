@@ -138,20 +138,22 @@ export function Album({ save, onClose }: { save: Save; onClose: () => void }) {
 
 // Juju writes back. The reply is kept with the day's note, and the phone's own share
 // sheet sends it to Nini through whichever app she likes.
-export function Reply({ current, onSave, onClose }: { current?: string; onSave: (text: string) => void; onClose: () => void }) {
+export function Reply({ note, current, onSave, onClose }: { note: string; current?: string; onSave: (text: string) => void; onClose: () => void }) {
   const [text, setText] = useState(current ?? '');
   const [state, setState] = useState<'idle' | 'kept' | 'copied'>('idle');
   const clean = text.trim();
+  // What Nini receives: his own note first, so he knows what she is answering.
+  const message = `Nini's note: "${note}"\n\nJuju: ${clean}`;
 
   const send = async () => {
     if (!clean) return;
     onSave(clean);
     try {
       if (navigator.share) {
-        await navigator.share({ text: clean });
+        await navigator.share({ text: message });
         setState('kept');
       } else {
-        await navigator.clipboard.writeText(clean);
+        await navigator.clipboard.writeText(message);
         setState('copied');
       }
     } catch {
@@ -173,7 +175,7 @@ export function Reply({ current, onSave, onClose }: { current?: string; onSave: 
       <p className="small" role="status">
         {state === 'kept' && 'Your reply is kept with today\'s note.'}
         {state === 'copied' && 'Copied. Paste it into a message to Nini. It is also kept with today\'s note.'}
-        {state === 'idle' && 'This opens your messages so you can send it to him.'}
+        {state === 'idle' && 'This opens your messages, with his note above your reply.'}
       </p>
     </Sheet>
   );
