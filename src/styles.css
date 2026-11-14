@@ -1,0 +1,223 @@
+/* Hallmark · shape: one-screen game, three scenes on a fixed 390 x 720 frame · genre: playful · theme: custom (JUNI storybook) · job: try · idea: "a morning coffee shop where every order ends in a note from Nini" · vibe: "warm, small, storybook, matcha and pink"
+ * paper: #e3ebd2 · accent: #5c7a3d · display: Baloo 2 · body: Nunito · hero: the shop itself · nav: two soft buttons under the order · footer: none · imagery: the game, drawn in code · signature: the order slip that becomes Nini's handwritten note
+ * axes: sage wall/rounded display/matcha · posture: scene · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: none blocking */
+/* waive 80: an illustrated game by request, the drawing is the product */
+:root {
+  --page: #eef1e2;
+  --ink: #4a3226;
+  --ink-soft: #7a5f50;
+  --white: #fffdf8;
+  --cream: #fbf1df;
+  --cream-deep: #efdcbc;
+  --matcha: #9bb573;
+  --matcha-deep: #5c7a3d;
+  --matcha-pale: #dbe6c6;
+  --wall: #e3ebd2;
+  --wall-deep: #d3dfbd;
+  --pink: #f3b9b7;
+  --pink-deep: #e08b8e;
+  --pink-pale: #fbe6e2;
+  --wood: #c79a6b;
+  --wood-pale: #e7c9a3;
+  --bake: #e0a96d;
+  --sun: #f9d27a;
+  --sky: #fdeccf;
+  --shadow: #4a3226;
+  /* drink colours */
+  --milk: #fff6e6;
+  --matcha-milk: #b7cd92;
+  --coffee: #7a4b32;
+  --coffee-milk: #c9a27c;
+  --straw: #ee9aa0;
+  --straw-milk: #f4c9c6;
+  --cocoa: #6b4534;
+  --cocoa-milk: #a97b5c;
+  --ube: #8e6bb0;
+  --ube-milk: #cdb8e2;
+  --mango: #f6b545;
+  --mango-milk: #f9d894;
+  --mango-matcha: #d3dc8c;
+  /* characters */
+  --skin: #e2b188;
+  --dog: #b0703f;
+  --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, sans-serif;
+  --font-note: "Caveat", "Segoe Print", cursive;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  color-scheme: light;
+}
+/* the window follows the real time of day */
+[data-time="day"] { --sky: #e4f0e6; }
+[data-time="evening"] { --sky: #f8cdbf; --sun: #f4a56f; }
+[data-time="night"] { --sky: #575a7c; }
+
+html, body, #root { height: 100%; }
+html, body { overflow: clip; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 500;
+  line-height: 1.4;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+h1, h2, p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+h1, h2 { font-family: var(--font-display); font-weight: 700; line-height: 1.1; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+
+/* stage is the screen, frame is the 390 x 720 picture that everything is measured against */
+.stage { position: relative; height: 100%; max-width: 480px; margin-inline: auto; overflow: hidden; container-type: size; background: var(--wall); }
+.frame { position: absolute; left: 50%; top: 50%; width: min(100cqw, calc(100cqh * .5417)); aspect-ratio: 390 / 720; transform: translate(-50%, -50%); container-type: inline-size; }
+.scene { position: absolute; inset: 0; }
+.art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; display: block; }
+.small { font-size: 3.6cqw; font-weight: 700; color: var(--ink-soft); }
+
+.btn { font: inherit; font-weight: 700; font-size: 4.3cqw; min-height: 44px; padding: 0 6cqw; border: 0; border-radius: 99px; background: var(--matcha-deep); color: var(--white); cursor: pointer; transition: transform .16s var(--ease), background-color .16s linear, opacity .16s linear; }
+.btn:hover { background: var(--ink); }
+.btn:active { transform: translateY(1px) scale(.97); }
+.btn:focus-visible, .art-pick:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; transition: none; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.soft { background: var(--cream); color: var(--ink); box-shadow: 0 1.5cqw 3cqw -1.5cqw color-mix(in srgb, var(--shadow) 50%, transparent); }
+.btn.soft:hover { background: var(--white); }
+.btn.big { min-height: 60px; padding: 0 9cqw; font-size: 5cqw; display: inline-flex; align-items: center; gap: 3cqw; }
+.btn.big .count { font-size: 3.6cqw; opacity: .85; }
+.btn.held { transform: scale(.95); background: var(--ink); }
+
+/* shop */
+.mark, .hello, .date { position: absolute; left: 0; right: 0; text-align: center; }
+.mark { top: 3%; font-size: 9.5cqw; letter-spacing: .04em; color: var(--matcha-deep); }
+.hello { top: 9%; font-weight: 700; font-size: 4.4cqw; }
+.date { top: 12.2%; font-size: 3.5cqw; color: var(--ink-soft); }
+[data-time="night"] .shop .date { color: var(--ink); }
+.slip { position: absolute; bottom: 11.500%; left: 8%; right: 8%; padding: 4.5cqw 5cqw 5cqw; display: grid; gap: 2.2cqw; justify-items: start; background: var(--cream); border-radius: 5.5cqw; box-shadow: 0 2.5cqw 5cqw -2cqw color-mix(in srgb, var(--shadow) 50%, transparent); }
+.slip .what { font-family: var(--font-display); font-weight: 600; font-size: 5.6cqw; line-height: 1.15; }
+.shelf-nav { position: absolute; left: 8%; right: 8%; bottom: 2.4%; display: flex; gap: 3cqw; justify-content: center; }
+
+/* making the drink */
+.make-top { position: absolute; top: 4%; left: 8%; right: 8%; text-align: center; display: grid; gap: 1cqw; justify-items: center; }
+.make-name { font-size: 8cqw; }
+.pips { display: flex; gap: 1.6cqw; margin-top: 1.4cqw; }
+.pip { width: 8cqw; height: 1.8cqw; border-radius: 99px; background: var(--white); transition: background-color .3s linear; }
+.pip.now { background: var(--pink-deep); }
+.pip.done { background: var(--matcha-deep); }
+.make-say { position: absolute; top: 69.500%; left: 8%; right: 8%; text-align: center; display: grid; gap: 1cqw; }
+.make-say h2 { font-size: 6.4cqw; }
+.make-say p { font-size: 4.2cqw; color: var(--ink-soft); }
+.make-ctl { position: absolute; top: 81%; left: 4%; right: 4%; display: grid; gap: 3cqw; justify-items: center; }
+.praise { position: absolute; top: 22%; left: 0; right: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 9cqw; color: var(--pink-deep); pointer-events: none; }
+.arts { display: flex; gap: 4cqw; }
+.art-pick { width: 19cqw; height: 19cqw; padding: 0; border: 0; border-radius: 50%; background: var(--white); cursor: pointer; box-shadow: 0 1.5cqw 3cqw -1.5cqw color-mix(in srgb, var(--shadow) 50%, transparent); transition: transform .16s var(--ease), box-shadow .16s linear; }
+.art-pick svg { display: block; width: 100%; height: 100%; }
+.art-pick.on { transform: scale(1.08); box-shadow: 0 0 0 1cqw var(--pink-deep); }
+.make.scene:has(.arts) .make-say { top: 65.500%; }
+.make.scene:has(.arts) .make-ctl { top: 75.500%; }
+.stir-zone { cursor: grab; touch-action: none; outline: none; }
+.stir-zone:focus-visible .ring { stroke: var(--ink); stroke-width: 3; }
+.whisk { opacity: .9; }
+.stream { opacity: .95; }
+
+/* the note */
+.note { background: var(--pink-pale); display: grid; align-content: center; justify-items: center; gap: 5cqw; padding: 0 8cqw; box-shadow: 0 0 0 100vmax var(--pink-pale); }
+.note-card { width: 100%; box-sizing: border-box; background: var(--white); border-radius: 5.5cqw; padding: 6cqw 6cqw 5cqw; display: grid; gap: 2.5cqw; box-shadow: 0 3cqw 6cqw -3cqw color-mix(in srgb, var(--shadow) 50%, transparent); transform: rotate(-1.2deg); }
+.note-text { font-family: var(--font-note); font-size: 8cqw; line-height: 1.12; }
+.note-sign { font-family: var(--font-note); font-size: 7cqw; text-align: right; color: var(--pink-deep); }
+.reward { display: grid; grid-template-columns: 24cqw minmax(0, 1fr); gap: 3cqw; align-items: center; font-size: 4.1cqw; }
+.sticker { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* stamps and gifts */
+.stamps { display: flex; gap: 2.4cqw; justify-content: center; }
+.stamp { width: 11cqw; height: 11cqw; border-radius: 50%; box-sizing: border-box; border: 2px dashed var(--wood); display: grid; place-items: center; }
+.stamp.on { border: 0; background: var(--matcha-deep); transform: rotate(-8deg); }
+.stamp svg { width: 60%; height: 60%; display: block; }
+.note .stamps-line { font-size: 3.8cqw; color: var(--ink-soft); text-align: center; display: grid; gap: 2cqw; }
+.gift-title { font-size: 7.5cqw; text-align: center; }
+.gift .note-card { transform: rotate(1deg); max-height: 62cqh; overflow-y: auto; touch-action: pan-y; }
+.gift .note-text.long { font-size: 6.4cqw; }
+.unlocked { display: grid; gap: 2.5cqw; }
+.unlocked li { background: var(--white); border-radius: 4cqw; padding: 3.5cqw 4.5cqw; display: grid; gap: .8cqw; font-size: 4.2cqw; }
+.shelf-nav .btn { padding: 0 4.2cqw; font-size: 3.9cqw; }
+.test { position: absolute; left: 0; right: 0; top: 16%; display: flex; justify-content: center; }
+.test .btn { font-size: 3.4cqw; min-height: 32px; opacity: .85; }
+
+/* letter box and sticker book */
+.sheet-back { position: absolute; inset: 0; background: color-mix(in srgb, var(--shadow) 38%, transparent); display: grid; align-items: end; }
+.sheet { max-height: 88%; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; background: var(--cream); border-radius: 7cqw 7cqw 0 0; padding: 6cqw 6cqw calc(8cqw + env(safe-area-inset-bottom, 0px)); display: grid; gap: 5cqw; align-content: start; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 4cqw; }
+.sheet-head h2 { font-size: 7cqw; }
+.sheet .small { font-size: 3.5cqw; }
+.sheet .btn { font-size: 4cqw; padding: 0 5cqw; }
+.sheet .btn.soft { background: var(--white); }
+.empty { font-size: 4.2cqw; color: var(--ink-soft); padding-block: 6cqw; }
+.letters { display: grid; gap: 3cqw; }
+.letters li { background: var(--white); border-radius: 4cqw; padding: 4cqw 4.5cqw; display: grid; gap: 1.2cqw; }
+.letters .note-text { font-size: 6.4cqw; }
+.book { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4cqw 2.5cqw; }
+.book li { display: grid; gap: 1cqw; justify-items: center; text-align: center; }
+.book .small { font-size: 3cqw; line-height: 1.2; }
+.slot { display: block; width: 78%; aspect-ratio: 1; margin: 11%; box-sizing: border-box; border-radius: 50%; border: 2px dashed var(--cream-deep); }
+.missing .small { color: var(--wood); }
+
+/* svg paint, all through tokens */
+.f-wall{fill:var(--wall)} .f-wall-deep{fill:var(--wall-deep)} .f-sky{fill:var(--sky)} .f-sun{fill:var(--sun)}
+.f-matcha{fill:var(--matcha)} .f-matcha-deep{fill:var(--matcha-deep)} .f-matcha-pale{fill:var(--matcha-pale)}
+.f-cream{fill:var(--cream)} .f-cream-deep{fill:var(--cream-deep)} .f-white{fill:var(--white)}
+.f-pink{fill:var(--pink)} .f-pink-deep{fill:var(--pink-deep)} .f-wood{fill:var(--wood)} .f-wood-pale{fill:var(--wood-pale)}
+.f-bake{fill:var(--bake)} .f-ink{fill:var(--ink)} .f-skin{fill:var(--skin)} .f-dog{fill:var(--dog)} .f-pink-pale{fill:var(--pink-pale)}
+.ice{opacity:.6;stroke:var(--white);stroke-width:2}
+.s{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.s-cream{stroke:var(--cream)} .s-white{stroke:var(--white)} .s-wood{stroke:var(--wood)} .s-pink{stroke:var(--pink)}
+.s-ink{stroke:var(--ink)} .s-dog{stroke:var(--dog)} .s-matcha-deep{stroke:var(--matcha-deep)} .st-sun{stroke:var(--sun)}
+.fl-white{flood-color:var(--white)} .fl-shadow{flood-color:var(--shadow)}
+
+/* Nini is hidden once he has left; the walk itself lives in the motion block */
+.nini.gone, .nini.out { visibility: hidden; }
+
+/* motion, only for people who have not asked for less */
+@media (prefers-reduced-motion: no-preference) {
+  .steam { animation: steam 3.6s ease-in-out infinite; }
+  .steam.two { animation-delay: -1.8s; }
+  .sway { transform-box: fill-box; transform-origin: 50% 0; animation: sway 6s ease-in-out infinite; }
+  .tail { transform-box: fill-box; transform-origin: 100% 100%; animation: sway 3.2s ease-in-out infinite; }
+  .wob { animation: wob 4.5s ease-in-out infinite; transform-origin: 50% 60%; }
+  .slip, .make-say, .make-ctl, .note-card, .reward, .note-close, .view { animation: rise .45s var(--ease) both; }
+  .reward { animation-delay: .5s; }
+  .stamps-line { animation: rise .45s .7s var(--ease) both; }
+  .note-close { animation-delay: .9s; }
+  .slip { animation-delay: .5s; }
+  .slip.late { animation-delay: 2.1s; }
+  .nini.in { animation: walkin 1.7s .3s var(--ease) both; }
+  .nini.out { visibility: visible; animation: walkout 1.7s .5s ease-in both; }
+  .nini.in .bob { animation: bob .42s .3s 4 ease-in-out; }
+  .nini.out .bob { animation: bob .42s .5s 4 ease-in-out; }
+  .hi { animation: hi .5s 2.1s var(--ease) both; }
+  .twinkle circle { animation: twinkle 2.4s ease-in-out infinite; }
+  .twinkle circle:nth-child(2n) { animation-delay: -1.2s; }
+  .stamp.new { animation: stamp .5s .9s var(--ease) both; }
+  .sheet { animation: up .35s var(--ease) both; }
+  .sheet-back { animation: fade .25s linear both; }
+  .praise { animation: praise .85s var(--ease) both; }
+  .pop { animation: pop .4s var(--ease) both; }
+  .drop { animation: drop .45s cubic-bezier(.5, 0, .9, .6) both; }
+}
+@keyframes steam { 0%, 100% { opacity: .25; transform: translateY(4px); } 50% { opacity: .8; transform: translateY(-5px); } }
+@keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes wob { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes up { from { transform: translateY(100%); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes praise { 0% { opacity: 0; transform: translateY(8px) scale(.9); } 30% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-14px); } }
+@keyframes pop { from { opacity: 0; } }
+@keyframes drop { from { transform: translateY(0); } to { transform: translateY(var(--fall)); opacity: .6; } }
+@keyframes walkin { from { transform: translateX(320px); } }
+@keyframes walkout { to { transform: translateX(320px); } }
+@keyframes bob { 50% { transform: translateY(-5px); } }
+@keyframes hi { from { opacity: 0; } }
+@keyframes twinkle { 50% { opacity: .45; } }
+@keyframes stamp { from { opacity: 0; transform: scale(1.8) rotate(-20deg); } }
