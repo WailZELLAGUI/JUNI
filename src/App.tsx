@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ArtId } from './content/drinks';
 import { CARD, rewards } from './content/rewards';
 import { StickerDefs } from './art/stickers';
@@ -27,7 +27,8 @@ export function App() {
   const [leaving, setLeaving] = useState(false);
   const [skip, setSkip] = useState(0);
 
-  const today = useMemo(() => now(skip), [skip]);
+  const [wakes, setWakes] = useState(0);
+  const today = useMemo(() => now(skip), [skip, wakes]);
   const key = dateKey(today);
   const time = timeOfDay(today);
   const record = save.days[key];
@@ -52,6 +53,23 @@ export function App() {
 
   const gift = reward && count % CARD === 0 ? rewards[count / CARD - 1] : undefined;
   const closeSheet = useCallback(() => setSheet(null), []);
+
+  // If JUNI was left open overnight, start the new day as soon as Juju comes back to it.
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState === 'visible' && phase === 'shop' && dateKey(now(skip)) !== key) {
+        setLeaving(false);
+        setReward(undefined);
+        setWakes((n) => n + 1);
+      }
+    };
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => {
+      document.removeEventListener('visibilitychange', check);
+      window.removeEventListener('focus', check);
+    };
+  }, [phase, skip, key]);
 
   return (
     <div className="stage" data-time={time}>
